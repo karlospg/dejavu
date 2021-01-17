@@ -7,7 +7,8 @@ from dejavu.base_classes.common_database import CommonDatabase
 from dejavu.config.settings import (FIELD_FILE_SHA1, FIELD_FINGERPRINTED,
                                     FIELD_HASH, FIELD_OFFSET, FIELD_SONG_ID,
                                     FIELD_SONGNAME, FIELD_TOTAL_HASHES,
-                                    FINGERPRINTS_TABLENAME, SONGS_TABLENAME)
+                                    FINGERPRINTS_TABLENAME, SONGS_TABLENAME,
+                                    FIELD_SONG_URL)
 
 
 class PostgreSQLDatabase(CommonDatabase):
@@ -21,6 +22,7 @@ class PostgreSQLDatabase(CommonDatabase):
         ,   "{FIELD_FINGERPRINTED}" SMALLINT DEFAULT 0
         ,   "{FIELD_FILE_SHA1}" BYTEA
         ,   "{FIELD_TOTAL_HASHES}" INT NOT NULL DEFAULT 0
+        ,   "{FIELD_YOUTUBE}" VARCHAR(250)
         ,   "date_created" TIMESTAMP NOT NULL DEFAULT now()
         ,   "date_modified" TIMESTAMP NOT NULL DEFAULT now()
         ,   CONSTRAINT "pk_{SONGS_TABLENAME}_{FIELD_SONG_ID}" PRIMARY KEY ("{FIELD_SONG_ID}")
@@ -59,7 +61,7 @@ class PostgreSQLDatabase(CommonDatabase):
     """
 
     INSERT_SONG = f"""
-        INSERT INTO "{SONGS_TABLENAME}" ("{FIELD_SONGNAME}", "{FIELD_FILE_SHA1}","{FIELD_TOTAL_HASHES}")
+        INSERT INTO "{SONGS_TABLENAME}" ("{FIELD_SONGNAME}", "{FIELD_FILE_SHA1}","{FIELD_TOTAL_HASHES}","{FIELD_SONG_URL}")
         VALUES (%s, decode(%s, 'hex'), %s)
         RETURNING "{FIELD_SONG_ID}";
     """
@@ -141,7 +143,7 @@ class PostgreSQLDatabase(CommonDatabase):
         # the previous process.
         Cursor.clear_cache()
 
-    def insert_song(self, song_name: str, file_hash: str, total_hashes: int) -> int:
+    def insert_song(self, song_name: str, song_url: str, file_hash: str, total_hashes: int) -> int:
         """
         Inserts a song name into the database, returns the new
         identifier of the song.
@@ -152,7 +154,7 @@ class PostgreSQLDatabase(CommonDatabase):
         :return: the inserted id.
         """
         with self.cursor() as cur:
-            cur.execute(self.INSERT_SONG, (song_name, file_hash, total_hashes))
+            cur.execute(self.INSERT_SONG, (song_name, file_hash, total_hashes, song_url))
             return cur.fetchone()[0]
 
     def __getstate__(self):

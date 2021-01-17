@@ -118,13 +118,14 @@ class Dejavu:
         pool.close()
         pool.join()
 
-    def fingerprint_file(self, file_path: str, song_name: str = None) -> None:
+    def fingerprint_file(self, file_path: str, song_name: str = None, song_url: str = None) -> None:
         """
         Given a path to a file the method generates hashes for it and stores them in the database
         for later be queried.
 
         :param file_path: path to the file.
         :param song_name: song name associated to the audio file.
+        :param song_url: url of the song, usually youtube url
         """
         song_name_from_path = decoder.get_audio_name_from_path(file_path)
         song_hash = decoder.unique_hash(file_path)
@@ -135,10 +136,9 @@ class Dejavu:
         else:
             song_name, hashes, file_hash = Dejavu._fingerprint_worker(
                 file_path,
-                self.limit,
-                song_name=song_name
+                self.limit
             )
-            sid = self.db.insert_song(song_name, file_hash)
+            sid = self.db.insert_song(song_name, song_url, file_hash)
 
             self.db.insert_hashes(sid, hashes)
             self.db.set_song_fingerprinted(sid)
