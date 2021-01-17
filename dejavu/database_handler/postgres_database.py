@@ -22,7 +22,7 @@ class PostgreSQLDatabase(CommonDatabase):
         ,   "{FIELD_FINGERPRINTED}" SMALLINT DEFAULT 0
         ,   "{FIELD_FILE_SHA1}" BYTEA
         ,   "{FIELD_TOTAL_HASHES}" INT NOT NULL DEFAULT 0
-        ,   "{FIELD_YOUTUBE}" VARCHAR(250)
+        ,   "{FIELD_SONG_URL}" VARCHAR(250)
         ,   "date_created" TIMESTAMP NOT NULL DEFAULT now()
         ,   "date_modified" TIMESTAMP NOT NULL DEFAULT now()
         ,   CONSTRAINT "pk_{SONGS_TABLENAME}_{FIELD_SONG_ID}" PRIMARY KEY ("{FIELD_SONG_ID}")
