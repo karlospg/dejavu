@@ -135,11 +135,14 @@ class Dejavu:
             print(f"{song_name} already fingerprinted, continuing...")
         else:
             song_name, hashes, file_hash = Dejavu._fingerprint_worker(
-                file_path,
-                self.limit
+                (file_path,
+                self.limit)
             )
-            sid = self.db.insert_song(song_name, song_url, file_hash)
 
+            print(f"Inserting song...")
+            sid = self.db.insert_song(song_name, song_url, file_hash, len(hashes))
+
+            print(f"Inserting hashes...")
             self.db.insert_hashes(sid, hashes)
             self.db.set_song_fingerprinted(sid)
             self.__load_fingerprinted_audio_hashes()

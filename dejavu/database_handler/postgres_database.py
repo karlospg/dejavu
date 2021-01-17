@@ -62,7 +62,7 @@ class PostgreSQLDatabase(CommonDatabase):
 
     INSERT_SONG = f"""
         INSERT INTO "{SONGS_TABLENAME}" ("{FIELD_SONGNAME}", "{FIELD_FILE_SHA1}","{FIELD_TOTAL_HASHES}","{FIELD_SONG_URL}")
-        VALUES (%s, decode(%s, 'hex'), %s)
+        VALUES (%s, decode(%s, 'hex'), %s, %s)
         RETURNING "{FIELD_SONG_ID}";
     """
 
